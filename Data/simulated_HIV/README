@@ -1,0 +1,12 @@
+Note on the mismatch between the data and the paper in naming of the clock models:
+
+For bimodals:
+clock1 --> bimodal 3
+clock2 --> bimodal 4
+clock3 --> bimodal 1
+clock4 --> bimodal 2
+
+For multimodals:
+trilnorm --> trimodal 3
+trilnormcave --> trimodal 1
+trilnormvex --> trimodal 2
