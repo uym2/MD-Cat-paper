@@ -10,11 +10,11 @@ This repository includes 4 datasets used in the manuscript "Expectation-Maximiza
 * simHIV: simulated data of HIV viruses. The 12 model conditions are grouped into 3 main categories: unimodals, bimodals, and multimodals as described in the manuscript.
 Note on the mismatch between the file name and the model name in the manuscript:
     * For bimodals:
-        clock1 --> bimodal 3
-        clock2 --> bimodal 4
-        clock3 --> bimodal 1
-        clock4 --> bimodal 2
+        * clock1 --> bimodal 3
+        * clock2 --> bimodal 4
+        * clock3 --> bimodal 1
+        * clock4 --> bimodal 2
     * For multimodals:
-        trilnorm --> trimodal 3
-        trilnormcave --> trimodal 1
-        trilnormvex --> trimodal 2
+        * trilnorm --> trimodal 3
+        * trilnormcave --> trimodal 1
+        * trilnormvex --> trimodal 2
