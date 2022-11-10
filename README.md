@@ -7,7 +7,8 @@ This repository includes 4 datasets used in the manuscript "Expectation-Maximiza
 * Real biological data of Angiosperms: include DNA sequences of 4 genes atpB, rbcL, psbA, and 18S published by Beaulieu et. al. 
 
 ## Description of the Data and file structure
-* simHIV: simulated data of HIV viruses. The 12 model conditions are grouped into 3 main categories: unimodals, bimodals, and multimodals as described in the manuscript.
+Files belonging to each of the 4 datasets can be identified by a unique prefix:
+* simHIV: files belonging to the simulated data of HIV viruses. The 12 model conditions are grouped into 3 main categories: unimodals, bimodals, and multimodals as described in the manuscript.
 Note on the mismatch between the file name and the model name in the manuscript:
     * For bimodals:
         * clock1 --> bimodal 3
@@ -18,3 +19,6 @@ Note on the mismatch between the file name and the model name in the manuscript:
         * trilnorm --> trimodal 3
         * trilnormcave --> trimodal 1
         * trilnormvex --> trimodal 2
+* simAngio: files belonging to the simulated data of Angiosperms.
+* realHIV: files belonging to the real HIV data.
+* realAngio: files belonging to the real angiosperm data.
