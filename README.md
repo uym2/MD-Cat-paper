@@ -1,7 +1,6 @@
-# Data used in the manuscript "Expectation-Maximization enables Phylogenetic Dating under a Categorical Rate Model"
+# MD-Cat data suit
 ---
-
-This repository includes 4 datasets:
+This repository includes 4 datasets used in the manuscript "Expectation-Maximization enables Phylogenetic Dating under a Categorical Rate Model".
 * simulated data of HIV viruses: 12 different model conditions (reuse and augment the data by To et. al.)
 * simulated data of Angiosperms: 5 different scenarios (reuse and augment the data by Beaulieu et. al.)
 * real biological data of HIV-1 M group (subtypes A-L): downloaded from LANL (http://www.hiv.lanl.gov/), filtered and subsampled to 1104 sequences
