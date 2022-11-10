@@ -1,8 +1,8 @@
 # MD-Cat data suit
 ---
 This repository includes 4 datasets used in the manuscript "Expectation-Maximization enables Phylogenetic Dating under a Categorical Rate Model".
-* Simulated data of HIV viruses: 12 different model conditions (reuse and augment the data by [To et. al.](https://datadryad.org/stash/dataset/doi:10.5061/dryad.968t3)
-* Simulated data of Angiosperms: 5 different scenarios (reuse and augment the data by Beaulieu et. al.)
+* Simulated data of HIV viruses: 12 different model conditions (reuse and augment the data by [To et. al. 2015](https://datadryad.org/stash/dataset/doi:10.5061/dryad.968t3)
+* Simulated data of Angiosperms: 5 different scenarios (reuse and augment the data by [Beaulieu et. al. 2015](https://datadryad.org/stash/dataset/doi:10.5061/dryad.629sc)
 * Real biological data of HIV-1 M group (subtypes A-L): downloaded from LANL [http://www.hiv.lanl.gov/], filtered and subsampled to 1104 sequences
 * Real biological data of Angiosperms: include DNA sequences of 4 genes atpB, rbcL, psbA, and 18S published by Beaulieu et. al. 
 
