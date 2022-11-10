@@ -1,4 +1,4 @@
-# Title of Dataset: Data used in the manuscript "Expectation-Maximization enables Phylogenetic Dating under a Categorical Rate Model"
+# Data used in the manuscript "Expectation-Maximization enables Phylogenetic Dating under a Categorical Rate Model"
 ---
 
 This repository includes 4 datasets:
