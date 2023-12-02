@@ -3,17 +3,15 @@ require(ggplot2)
 require(reshape2)
 
 d = read.table("MDCat_HIVsim_vary_k.txt",header=T)
-#d1 = d[d$k %in% c(2,5,10,25,50),]
-d1=d
 h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
                "height"=c(29.3667,66.8334,22.4934,32.4669),
                "name"=c("M3","M4","M1","M2"))
 
-d1 = merge(d1,h)
-d1$error = abs(d1$trueAge-d1$estAge)/d1$height
-d1$clockModel = factor(d1$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
+d = merge(d,h)
+d$error = abs(d$trueAge-d$estAge)/d$height
+d$clockModel = factor(d$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
 
-d2= dcast(k+treeModel+clockModel+rep~"error",data=d1,value.var = "error",fun.aggregate = mean)
+d2= dcast(k+treeModel+clockModel+rep~"error",data=d,value.var = "error",fun.aggregate = mean)
 ggplot(d2,aes(x=k,y=100*error,color=treeModel)) +
   stat_summary() + geom_line(stat="summary") + 
   scale_x_log10(breaks=c(2,5,10,25,50)) + xlab("# rate categories") + ylab("divergence time error (%)") +
