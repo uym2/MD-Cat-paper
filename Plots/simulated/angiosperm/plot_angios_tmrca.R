@@ -1,3 +1,5 @@
+setwd("/Users/uym2/my_gits/MD-Cat-paper/Plots/simulated/angiosperm")
+
 require(ggplot2)
 
 quantiles_95 <- function(x) {
@@ -7,10 +9,15 @@ quantiles_95 <- function(x) {
 }
 
 d = read.table("results_tmrca.txt",header=T)
-d$method = factor(d$method,levels=c("reltime","wlogdate","emd","Blnorm"),
-                  labels = c("RelTime","wLogDate","MD-Cat","BEAST"))
+#d2 = read.table("results_tmrca_moreBEAST.txt",header=F)
+#d = rbind(d1,d2)
 
-ggplot(d,aes(x=method,y=140-tmrca,fill=method)) + 
+d$method = factor(d$method,levels=c("wlogdate","emd","Blnorm",
+                                    "BEAST_strict","BEAST_rcla","reltime","BEAST_lnorm"),
+                  labels = c("wLogDate","MD-Cat","BEAST_lognorm",
+                             "BEAST_strict","BEAST_rcla","RelTime","BEAST_lnorm_old"))
+
+ggplot(d[! d$method %in% c("BEAST_lnorm_old"),],aes(x=method,y=140-tmrca,fill=method)) + 
   stat_summary(position=position_dodge2(width=0.75),
                fun.data = quantiles_95,geom="boxplot") +
   stat_summary() + scale_fill_brewer(palette = "Dark2") +
