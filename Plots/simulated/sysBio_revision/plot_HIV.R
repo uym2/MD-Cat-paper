@@ -1,0 +1,56 @@
+setwd("/Users/uym2/my_gits/MD-Cat-paper/Plots/simulated/sysBio_revision")
+require(ggplot2)
+require(reshape2)
+
+d = read.table("MDCat_HIVsim_vary_k.txt",header=T)
+#d1 = d[d$k %in% c(2,5,10,25,50),]
+d1=d
+h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
+               "height"=c(29.3667,66.8334,22.4934,32.4669),
+               "name"=c("M3","M4","M1","M2"))
+
+d1 = merge(d1,h)
+d1$error = abs(d1$trueAge-d1$estAge)/d1$height
+d1$clockModel = factor(d1$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
+
+d2= dcast(k+treeModel+clockModel+rep~"error",data=d1,value.var = "error",fun.aggregate = mean)
+ggplot(d2,aes(x=k,y=100*error,color=treeModel)) +
+  stat_summary() + geom_line(stat="summary") + 
+  scale_x_log10(breaks=c(2,5,10,25,50)) + xlab("# rate categories") + ylab("divergence time error (%)") +
+  scale_color_brewer(palette = "Set2")+
+  facet_wrap(~clockModel,scale="free") +
+  theme_classic() + theme(legend.title = element_blank(),legend.position = "bottom")
+ggsave("MDCat_HIVsim_vary_k.pdf",width = 6,height=4)
+with(d2,t.test(d2[k==2,"error"],d2[k==5,"error"]))
+
+summary(aov(error ~ k*(treeModel+clockModel),data=d2[d2$k %in% c(2,5),]))
+summary(aov(error ~ k*(treeModel+clockModel),data=d2[d2$k %in% c(5,10),]))
+##################################################################
+quantiles_95 <- function(x) {
+  r <- quantile(x, probs=c(0.05, 0.25, 0.5, 0.75, 0.95))
+  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  r
+}
+d = read.table("MDCat_HIVsim_vary_k_with_crossval.txt",header=T)
+h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
+               "height"=c(29.3667,66.8334,22.4934,32.4669),
+               "name"=c("M3","M4","M1","M2"))
+
+d = merge(d,h)
+d$error = abs(d$trueAge-d1$estAge)/d$height
+d$clockModel = factor(d$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
+d$selected = "Others"
+d[d$k == "selected",]$selected = "Cross-validation"
+d[d$k == 50,]$selected = "Default (k=50)"
+
+require(reshape2)
+d2 = dcast(selected+treeModel+clockModel+rep+k~"error",data=d,value.var = "error",fun.aggregate = mean)
+
+ggplot(d2,aes(x=treeModel,y=error*100,fill=selected)) + #geom_boxplot(outlier.size = 0.2) + 
+  stat_summary(position=position_dodge2(width=0.75),
+               fun.data = quantiles_95,geom="boxplot") +
+  stat_summary(position=position_dodge2(width = 0.9),size=0.3) + 
+  xlab("tree model") + ylab("divergence time error (%)") + 
+  facet_wrap(~clockModel,scale="free") + theme_classic() + 
+  theme(axis.text.x = element_text(angle = 30),legend.title = element_blank(),legend.position = "bottom")
+ggsave("MDCat_HIVsim_crossval_k.pdf")
