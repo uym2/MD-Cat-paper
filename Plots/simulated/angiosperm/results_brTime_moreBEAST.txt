@@ -1,4 +1,4 @@
-clockModel rep method brName trueLength estLength
+clockModel rep method brName estLength trueLength
 scenario1 rep001 BEAST_rcla Acer 86.8325 98.3711
 scenario1 rep001 BEAST_rcla Acorus 132.8168 127.036
 scenario1 rep001 BEAST_rcla Amborella 154.9882 140
