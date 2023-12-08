@@ -14,7 +14,7 @@ ggplot(d1) + geom_segment(aes(x=trueTime/height,y=p0025/height,xend=trueTime/hei
 geom_abline() + facet_grid(rows=vars(clockModel),cols=vars(treeModel),scale="free") + 
   theme_classic() + theme(legend.position = "None",panel.border = element_rect(colour = "black", fill=NA)) + 
   xlab("Normalized true branch length (year/height)") + ylab("Normalized estimated branch length (year/height)")
-ggsave("MDCat_HIVsim_CI.pdf",width=6,height=4)
+ggsave("MDCat_HIVsim_CI.pdf",width=7,height=4)
 
 head(d1)
 
@@ -27,15 +27,44 @@ d1 %>% group_by(clockModel,treeModel) %>%
   mutate(c=n()) %>%
                 group_by(clockModel,treeModel,blg,inside) %>% 
   summarise(n=n()/unique(c)[1]) %>% 
-  #group_by(clockModel,treeModel,blg) %>% 
-  #mutate(perc=n/sum(n)) #%>%
 ggplot(aes(x=blg,fill=inside,y=n))+
   geom_bar(aes(),stat="identity")+
   facet_grid(rows=vars(clockModel),cols=vars(treeModel),scale="free") + 
   geom_hline(yintercept = 0.95,color="red")+
   scale_y_continuous(labels=percent,name="Portion of branches")+
   scale_x_discrete(name="branch length percentile")+
+  scale_fill_brewer(palette = 7,direction = -1,name="True length inside 95% CI: ")+
+  theme_classic() + theme(legend.position = "bottom",
+                          panel.border = element_rect(colour = "black", fill=NA)) 
+ggsave("HIV-support.pdf",width=8.5,height = 4.7)
+
+head(d1)
+
+d1 %>%
+  ggplot()+
+  stat_ecdf(aes(x=p0025/trueTime,linetype=p0025/trueTime>1),color="blue")+
+  stat_ecdf(aes(x=trueTime/p0975,linetype=trueTime/p0975>1),color="green")+
+  facet_grid(rows=vars(clockModel),cols=vars(treeModel),scale="free") + 
+  geom_vline(xintercept = 1,color="red")+
+  scale_x_continuous(name="Portion of branches")+
+  #scale_x_discrete(name="branch length percentile")+
   scale_fill_brewer(palette = 7,direction = -1,name="Inside 95% CI: ")+
   theme_classic() + theme(legend.position = "bottom",
                           panel.border = element_rect(colour = "black", fill=NA)) 
-ggsave("HIV-support.pdf",width=8,height = 5)
+
+d1 %>%  filter(trueTime<p0025 | trueTime>p0975) %>%
+  mutate(d=ifelse(trueTime<p0025,(p0025-trueTime)/trueTime,(trueTime-p0975)/trueTime)) %>%
+  ggplot()+
+  stat_ecdf(aes(x=d,color=clockModel,linetype=treeModel))+
+  #facet_grid(cols=vars(treeModel),scale="free") + 
+  #geom_vline(xintercept = 1,color="red")+
+  scale_color_brewer(palette = "Set2")+
+  scale_x_continuous(name=expression(abs(true - CI~boundary)/true),trans="log10",labels=percent,
+                     breaks = c(0.01,0.033,0.1,0.33,1,3.3,1))+
+  coord_cartesian(xlim=c(0.0005,8))+
+  #scale_x_discrete(name="branch length percentile")+
+  scale_fill_brewer(palette = 7,direction = -1,name="Inside 95% CI: ")+
+  theme_bw() + theme(legend.position = "right",
+                          panel.border = element_rect(colour = "black", fill=NA)) 
+
+ggsave("HIV-support-delta.pdf",width=8,height = 2.3)

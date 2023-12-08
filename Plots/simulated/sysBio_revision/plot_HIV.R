@@ -42,25 +42,24 @@ d[d$k == "selected",]$selected = "Cross-validation"
 d[d$k == 50,]$selected = "Default (k=50)"
 d$selected = factor(d$selected, levels=c("Default (k=50)","Cross-validation","Others"))
 
-
-qplot((sub("k","",merge(d[d$k == "selected" & d$nodeName =="I1",c(1,2,3,4,6,7,9,13)],
-                                  d[d$k != "selected" & d$nodeName =="I1",c(1,2,3,4,5,6,7,9,13)],
-                                  by=c("treeModel","clockGroup","rep","clockModel","nodeName","trueAge","estAge","error"))$k)
-))+theme_bw()+xlab("k")+ylab("# replicates")
-ggsave("selectedk_HIV.pdf",width=2.4, height = 4)
+dl=merge(d[d$k == "selected" & d$nodeName =="I1",c(1,2,3,4,6,7,9,13)],
+         d[d$k != "selected" & d$nodeName =="I1",c(1,2,3,4,5,6,7,9,13)],
+         by=c("treeModel","clockGroup","rep","clockModel","nodeName","trueAge","estAge","error"))$k
+qplot((sub("k","",dl)))+theme_bw()+xlab("k")+ylab("# replicates")
+ggsave("selectedk_HIV.pdf",width=2.9, height = 4)
 
 
 require(reshape2)
 require(scales)
 d2 = dcast(selected+treeModel+clockModel+rep+k~"error",data=d,value.var = "error",fun.aggregate = mean)
 
-ggplot(d2,aes(x=reorder(treeModel,error),y=error,fill=selected)) + #geom_boxplot(outlier.size = 0.2) + 
+ggplot(d2,aes(x=clockModel,y=error,fill=selected)) + #geom_boxplot(outlier.size = 0.2) + 
   stat_summary(position=position_dodge2(width=0.75),
                fun.data = quantiles_95,geom="boxplot") +
   stat_summary(position=position_dodge2(width = 0.9),size=0.3) + 
   xlab("") + scale_y_continuous(name = "divergence time error",labels = percent) + 
-  facet_wrap(~clockModel,scale="free") + theme_classic() + 
+  facet_wrap(~reorder(treeModel,error),scale="free") + theme_classic() + 
   scale_fill_brewer(name="",palette = "Set2")+
-  theme(axis.text.x = element_text(angle = 90),
+  theme(axis.text.x = element_text(angle = 0),
         legend.title = element_blank(),legend.position = "none")
-ggsave("MDCat_HIVsim_crossval_k.pdf",width=8, height=4)
+ggsave("MDCat_HIVsim_crossval_k.pdf",width=8, height=5)
