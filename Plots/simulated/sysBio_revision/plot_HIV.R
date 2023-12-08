@@ -14,7 +14,7 @@ d$clockModel = factor(d$clockModel,levels=c("trilnormcave","trilnormvex","trilno
 d2= dcast(k+treeModel+clockModel+rep~"error",data=d,value.var = "error",fun.aggregate = mean)
 ggplot(d2,aes(x=k,y=100*error,color=treeModel)) +
   stat_summary() + geom_line(stat="summary") + 
-  scale_x_log10(breaks=c(2,5,10,25,50)) + xlab("# rate categories") + ylab("divergence time error (%)") +
+  scale_x_log10(breaks=c(2,5,10,25,50)) + xlab("# rate categories (k)") + ylab("divergence time error (%)") +
   scale_color_brewer(palette = "Set2")+
   facet_wrap(~clockModel,scale="free") +
   theme_classic() + theme(legend.title = element_blank(),legend.position = "bottom")
@@ -33,22 +33,34 @@ d = read.table("MDCat_HIVsim_vary_k_with_crossval.txt",header=T)
 h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
                "height"=c(29.3667,66.8334,22.4934,32.4669),
                "name"=c("M3","M4","M1","M2"))
-
+head(d)
 d = merge(d,h)
-d$error = abs(d$trueAge-d1$estAge)/d$height
+d$error = abs(d$trueAge-d$estAge)/d$height
 d$clockModel = factor(d$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
 d$selected = "Others"
 d[d$k == "selected",]$selected = "Cross-validation"
 d[d$k == 50,]$selected = "Default (k=50)"
+d$selected = factor(d$selected, levels=c("Default (k=50)","Cross-validation","Others"))
+
+
+qplot((sub("k","",merge(d[d$k == "selected" & d$nodeName =="I1",c(1,2,3,4,6,7,9,13)],
+                                  d[d$k != "selected" & d$nodeName =="I1",c(1,2,3,4,5,6,7,9,13)],
+                                  by=c("treeModel","clockGroup","rep","clockModel","nodeName","trueAge","estAge","error"))$k)
+))+theme_bw()+xlab("k")+ylab("# replicates")
+ggsave("selectedk_HIV.pdf",width=2.4, height = 4)
+
 
 require(reshape2)
+require(scales)
 d2 = dcast(selected+treeModel+clockModel+rep+k~"error",data=d,value.var = "error",fun.aggregate = mean)
 
-ggplot(d2,aes(x=treeModel,y=error*100,fill=selected)) + #geom_boxplot(outlier.size = 0.2) + 
+ggplot(d2,aes(x=reorder(treeModel,error),y=error,fill=selected)) + #geom_boxplot(outlier.size = 0.2) + 
   stat_summary(position=position_dodge2(width=0.75),
                fun.data = quantiles_95,geom="boxplot") +
   stat_summary(position=position_dodge2(width = 0.9),size=0.3) + 
-  xlab("tree model") + ylab("divergence time error (%)") + 
+  xlab("") + scale_y_continuous(name = "divergence time error",labels = percent) + 
   facet_wrap(~clockModel,scale="free") + theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30),legend.title = element_blank(),legend.position = "bottom")
-ggsave("MDCat_HIVsim_crossval_k.pdf")
+  scale_fill_brewer(name="",palette = "Set2")+
+  theme(axis.text.x = element_text(angle = 90),
+        legend.title = element_blank(),legend.position = "none")
+ggsave("MDCat_HIVsim_crossval_k.pdf",width=8, height=4)

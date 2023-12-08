@@ -26,15 +26,29 @@ d$error = abs(d$trueNodeAge-d$estNodeAge)/140
 d$selected = "Others"
 d[d$k == "kselected",]$selected = "Cross-validation"
 d[d$k == "k50",]$selected = "Default (k=50)"
+d$selected = factor(d$selected, levels=c("Default (k=50)","Cross-validation","Others"))
+
+
+
+
+qplot((sub("k","",merge(d[d$k == "kselected" & d$nodeName =="I0",c(1,2,4,5,6,7)],d[d$k != "kselected"& d$nodeName =="I0",c(1,2,3,4,5,6,7)],
+      by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k)
+))+theme_bw()+xlab("k")+ylab("# replicates")
+ggsave("selectedk_angio.pdf",width=3.2, height = 4)
 
 d2 = dcast(selected+scenario+rep+k~"error",data=d,value.var = "error",fun.aggregate = mean)
 
-ggplot(d2,aes(x=scenario,y=error*100,fill=selected)) + 
+require(scales)
+
+head(d2)
+ggplot(d2,aes(x=scenario,y=error,fill=selected)) + 
   stat_summary(position=position_dodge2(width=0.75),
                fun.data = quantiles_95,geom="boxplot") +
   stat_summary(position=position_dodge2(width = 0.9),size=0.3) + 
   theme_classic() + theme(axis.text.x = element_text(angle = 0), axis.title.x = element_blank(),
                           legend.title = element_blank(),legend.position = "bottom") + 
-  ylab("divergence time error (%)")
-
-ggsave("MDCat_Angiosperm_crossval_k.pdf")
+  ylab("divergence time error")+
+  scale_fill_brewer(palette = "Set2")+
+  scale_y_continuous(labels = percent)
+nrow(d2[d2$selected=="Default (k=50)",])
+ggsave("MDCat_Angiosperm_crossval_k.pdf",width=6, height =4 )
