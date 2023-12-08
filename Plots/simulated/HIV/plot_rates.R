@@ -12,10 +12,25 @@ d$clockModel = factor(d$clockModel,levels = c("exp","unif","gamma","lognorm",
                                  "Bimodal 1","Bimodal 2","Bimodal 3","Bimodal 4",
                                  "Trimodal 1","Trimodal 2","Trimodal 3","Quartmodal"))
 
-ggplot(d[d$method != "Bstrict",],aes(x=clockModel,y=log10(exp(1))*error,fill=method)) + geom_boxplot(position="dodge") + 
-  stat_summary(position=position_dodge2(width = 0.8)) + 
+quantiles_95 <- function(x) {
+  r <- quantile(x, probs=c(0.05, 0.5, 0.95))
+  names(r) <- c("ymin", "y", "ymax")
+  r
+}
+quantiles_75 <- function(x) {
+  r <- quantile(x, probs=c(0.25, 0.5, 0.75))
+  names(r) <- c("ymin", "y", "ymax")
+  r
+}
+
+ggplot(d[d$method != "Bstrict",],aes(x=clockModel,y=log10(exp(1))*error,fill=method)) + 
+  stat_summary(position=position_dodge(width=0.9),width=.5,
+               fun.data = quantiles_95,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width=0.75),
+               fun.data = quantiles_75,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width = 0.9)) +
   xlab("clock model") + ylab("mean squared logarithmic error (MSLE)") + 
-  scale_fill_manual(values = c("#D95F02","#7570B3")) +
+  scale_fill_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(5:6)]) +
   #scale_fill_brewer(palette = "Dark2") + 
   theme_classic() + 
   theme(legend.title=element_blank(),legend.position = "bottom",axis.text.x = element_text(angle = 15))

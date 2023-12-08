@@ -20,8 +20,14 @@ d1$clockModel =factor(d1$clockModel,levels = c("exp","gamma","lognorm",
                                  "Quartmodal","Uniform"))
 
 quantiles_95 <- function(x) {
-  r <- quantile(x, probs=c(0.05, 0.05, 0.5, 0.95, 0.95))
-  names(r) <- c("ymin", "lower", "middle", "upper", "ymax")
+  r <- quantile(x, probs=c(0.05, 0.5, 0.95))
+  names(r) <- c("ymin", "y", "ymax")
+  r
+}
+
+quantiles_75 <- function(x) {
+  r <- quantile(x, probs=c(0.25, 0.5, 0.75))
+  names(r) <- c("ymin", "y", "ymax")
   r
 }
 
@@ -35,43 +41,56 @@ d1$nsmpltime = "11 sampling times"
 d1[d1$name %in% c("M2","M4"),]$nsmpltime = "3 sampling times"
 
 ggplot(d1[!d1$method %in% c("BEAST-lognormal") & d1$clockModel %in% c("Exponential","Lognormal","Gamma","Uniform"),],
-       aes(x=clockModel,y=100*error,fill=method)) + 
-  #geom_boxplot(outlier.alpha = 0.5,outlier.size = 0.1,notch=T) + 
-  stat_summary(position=position_dodge2(width=0.75),fun.data = quantiles_95,geom="boxplot") +
-  stat_summary(position=position_dodge2(width=0.9)) +
-  scale_fill_brewer(palette = "Dark2") +
+       aes(x=clockModel,y=error,fill=method)) + 
+  stat_summary(position=position_dodge(width=0.9),width=.5,
+               fun.data = quantiles_95,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width=0.75),
+               fun.data = quantiles_75,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width = 0.9)) +
+  #stat_summary(aes(group=method),geom="line") +
+  geom_hline(yintercept = 0,linetype=3) + 
+  scale_fill_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(2,7,5:6)]) +
+  scale_y_continuous(label=percent)+
   #scale_y_log10() +
   #coord_cartesian(ylim = c(0.007,5)) +
   #facet_wrap(~clockModel,nrow=3) +
-  ylab("normalized error (%)") + 
+  ylab("normalized error") + 
   theme_classic() + theme(legend.title = element_blank(),
                           legend.position = c(0.5,0.8),axis.title.x = element_blank()) +
   theme(panel.spacing = unit(0,"pt"))
 ggsave("results_mse_canonical.pdf",width = 4,height = 4)
 
-ggplot(d1[!d1$method %in% c("BEAST-lognormal") & d1$clockModel %in% c("Bimodal 1","Bimodal 2","Bimodal 3","Bimodal 4"),],aes(x=clockModel,y=100*error,fill=method)) + 
+ggplot(d1[!d1$method %in% c("BEAST-lognormal") & d1$clockModel %in% c("Bimodal 1","Bimodal 2","Bimodal 3","Bimodal 4"),],aes(x=clockModel,y=error,fill=method)) + 
   #geom_boxplot(outlier.alpha = 0.5,outlier.size = 0.1,notch=T) + 
-  stat_summary(position=position_dodge2(width=0.75),fun.data = quantiles_95,geom="boxplot") +
-  stat_summary(position=position_dodge2(width=0.9)) +
-  scale_fill_brewer(palette = "Dark2") +
+  stat_summary(position=position_dodge(width=0.9),width=.5,
+               fun.data = quantiles_95,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width=0.75),
+               fun.data = quantiles_75,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width = 0.9)) +
+  #stat_summary(aes(group=method),geom="line") +
+  geom_hline(yintercept = 0,linetype=3) + 
+  scale_fill_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(2,7,5:6)]) +
+  scale_y_continuous(label=percent)+
   #scale_y_log10() +
   #coord_cartesian(ylim = c(0.007,5)) +
   #facet_wrap(~clockModel,nrow=3) +
-  ylab("normalized error (%)") + 
+  ylab("normalized error") + 
   theme_classic() + theme(legend.title = element_blank(),
                           legend.position = "None",axis.title.x = element_blank()) +
   theme(panel.spacing = unit(0,"pt"))
 ggsave("results_mse_bimodal.pdf",width = 4,height = 4)
 
-ggplot(d1[!d1$method %in% c("BEAST-lognormal") & d1$clockModel %in% c("Trimodal 1","Trimodal 2","Trimodal 3","Quartmodal"),],aes(x=clockModel,y=100*error,fill=method)) + 
-  #geom_boxplot(outlier.alpha = 0.5,outlier.size = 0.1,notch=T) + 
-  stat_summary(position=position_dodge2(width=0.75),fun.data = quantiles_95,geom="boxplot") +
-  stat_summary(position=position_dodge2(width=0.9)) +
-  scale_fill_brewer(palette = "Dark2") +
-  #scale_y_log10() +
-  #coord_cartesian(ylim = c(0.007,5)) +
-  #facet_wrap(~clockModel,nrow=3) +
-  ylab("normalized error (%)") + xlab("tree model") +
+ggplot(d1[!d1$method %in% c("BEAST-lognormal") & d1$clockModel %in% c("Trimodal 1","Trimodal 2","Trimodal 3","Quartmodal"),],aes(x=clockModel,y=error,fill=method)) + 
+  stat_summary(position=position_dodge(width=0.9),width=.5,
+               fun.data = quantiles_95,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width=0.75),
+               fun.data = quantiles_75,geom="crossbar",size=0.2) +
+  stat_summary(position=position_dodge2(width = 0.9)) +
+  #stat_summary(aes(group=method),geom="line") +
+  geom_hline(yintercept = 0,linetype=3) + 
+  scale_fill_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(2,7,5:6)]) +
+  scale_y_continuous(label=percent)+
+  ylab("normalized error") + xlab("tree model") +
   theme_classic() + theme(legend.title = element_blank(),
                           legend.position = "None",axis.title.x = element_blank()) +
   theme(panel.spacing = unit(0,"pt"))

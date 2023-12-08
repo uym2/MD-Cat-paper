@@ -59,7 +59,7 @@ d1 %>%  filter(trueTime<p0025 | trueTime>p0975) %>%
   #facet_grid(cols=vars(treeModel),scale="free") + 
   #geom_vline(xintercept = 1,color="red")+
   scale_color_brewer(palette = "Set2")+
-  scale_x_continuous(name=expression(abs(true - CI~boundary)/true),trans="log10",labels=percent,
+  scale_x_continuous(name=expression(abs( true - CI~boundary )/true),trans="log10",labels=percent,
                      breaks = c(0.01,0.033,0.1,0.33,1,3.3,1))+
   coord_cartesian(xlim=c(0.0005,8))+
   #scale_x_discrete(name="branch length percentile")+
