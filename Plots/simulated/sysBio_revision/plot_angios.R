@@ -4,30 +4,34 @@ require(scales)
 require(tidyverse)
 dk = read.table("MDCat_Angiosperm_vary_k_nodeAge.txt",header=T)
 
-dk$error = abs(dk$trueNodeAge-dk$estNodeAge)/140
+d1 = read.table("../angiosperm/all_divergence.txt",header=T)
+
+d1$method = factor(d1$method,levels=c("Blnorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lognorm","wLogDate","MD-Cat"),
+                   labels = c("BEAST_lognorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
+
 dk %>% group_by(scenario  ,  rep , k) %>%
-  summarise(rmsn = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
-ggplot(aes(x=k,y=rmsn,color=k==50)) +
-  geom_line(stat="summary",size=1,color="black") + 
+        summarise(norm_rmse = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
+        mutate(method="MD-Cat") %>%
+#dk %>% group_by(scenario  ,  rep , k) %>%
+#  summarise(norm_rmse = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
+ggplot(aes(x=k,y=norm_rmse,color=method)) +
+  geom_line(stat="summary",size=1) + 
   stat_summary() + 
   scale_x_log10(breaks=c(2,5,10,25,50,100)) +  
   xlab("# rate categories") + 
   facet_wrap(~scenario,nrow=1)+
-  scale_color_brewer(palette = "Set2",name="Default:")+
+  geom_hline(aes(yintercept=norm_rmse,color=method),
+             data= d1 %>% filter(method!="MD-Cat") %>% group_by(method,scenario) %>% summarise(norm_rmse=mean(norm_rmse)))+
+  scale_color_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(1,6,7,5)]) +
   scale_y_continuous(name="divergence time RSME (height normalized)") + 
-  theme_classic() + theme(legend.position = c(0.9,0.85))
-ggsave("MDCat_Angiosperm_vary_k.pdf",width = 11,height=4)
+  theme_classic() + theme(legend.position = c(0.85,0.76))
+ggsave("MDCat_Angiosperm_vary_k.pdf",width = 8.2,height=3.6)
 
-d1 = read.table("../angiosperm/results_brTime.txt",header=T)
-d2 = read.table("../angiosperm/results_brTime_moreBEAST.txt",header=T)
-do=rbind(d1,d2)
-do$method = factor(do$method,levels=c("Blnorm","BEAST_strict","BEAST_rcla","reltime","BEAST_lognorm","wlogdate","emd"),
-                   labels = c("BEAST_lognorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
-do = do[do$method != "BEAST_lnorm_old",]
+dk %>% group_by(scenario  ,  rep , k) %>%
+  summarise(rmsn = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
+  group_by(scenario,k) %>% summarise(mean=mean(rmsn)) %>%
+  pivot_wider(names_from = scenario,values_from=mean)
 
-
-require(reshape2)
-dcast(dk[,c(1,3,7)],k~scenario,fun.aggregate = mean)
 
 ########################################
 require(reshape2)
@@ -54,10 +58,9 @@ mean((dcast(dkc[,c(1,8,7)],scenario~selected,fun.aggregate = mean)[,3]-
 
 dcast(dkc[,c(1,3,7)],scenario~k,fun.aggregate = mean)
 
-qplot((sub("k","",merge(dkc[dkc$k == "kselected" & dkc$nodeName =="I0",c(1,2,4,5,6,7)],
+qplot(factor(sub("k","",merge(dkc[dkc$k == "kselected" & dkc$nodeName =="I0",c(1,2,4,5,6,7)],
                         dkc[dkc$k != "kselected"& dkc$nodeName =="I0",c(1,2,3,4,5,6,7)],
-      by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k)
-))+theme_bw()+xlab("k")+ylab("# replicates")
+      by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k),levels=c(2,5,10,25,50)))+theme_bw()+xlab("k")+ylab("# replicates")
 ggsave("selectedk_angio.pdf",width=3.2, height = 4)
 
 d2 = dcast(selected+scenario+rep+k~"error",data=dkc,value.var = "error",fun.aggregate = mean)
