@@ -17,7 +17,7 @@ t1 = read.table("results_brTime.txt",header=T)
 t2 = read.table("results_brTime_moreBEAST.txt",header=T)
 t=rbind(t1,t2)
 t$method = factor(t$method,levels=c("Blnorm","BEAST_strict","BEAST_rcla","reltime","BEAST_lognorm","wlogdate","emd"),
-                  labels = c("BEAST_lognorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
+                  labels = c("BEAST: LogNorm","BEAST: strict","BEAST: RLC","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
 
 
 require(dplyr)
@@ -146,6 +146,6 @@ ggplot(aes(x=method,
   facet_grid(~sub(pattern = "scenario","Sc. ",clockModel),scales="free_x",space="free", switch = "x") +
   theme_classic() +
   theme(axis.ticks.x = element_blank(),axis.title.x = element_blank(),axis.text.x = element_blank()) +
-  theme(legend.title = element_blank(),legend.position = "none") 
+  theme(legend.title = element_blank(),legend.position = "bottom") 
 #stat_summary(fun.data = quantiles_75,geom="crossbar",size=0.2,width=0.2) 
-ggsave("angios_bias_all.pdf",width = 7,height = 4.2)
+ggsave("angios_bias_all.pdf",width = 7,height = 4.5)

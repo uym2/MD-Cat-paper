@@ -2,12 +2,12 @@
 require(ggplot2)
 require(scales)
 require(tidyverse)
-dk = read.table("MDCat_Angiosperm_vary_k_nodeAge.txt",header=T)
+dk = read.table("../sysBio_revision/MDCat_Angiosperm_vary_k_nodeAge.txt",header=T)
 
 d1 = read.table("../angiosperm/all_divergence.txt",header=T)
 
-d1$method = factor(d1$method,levels=c("Blnorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lognorm","wLogDate","MD-Cat"),
-                   labels = c("BEAST_lognorm","BEAST_strict","BEAST_rcla","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
+d1$method = factor(d1$method,levels=c("Blnorm","Bstrict","Brcla","RelTime","BEAST_lognorm","wLogDate","MD-Cat"),
+                   labels = c("BEAST: LogNorm","BEAST: RLC","BEAST: strict","RelTime","BEAST_lnorm_old","wLogDate","MD-Cat"))
 
 dk %>% group_by(scenario  ,  rep , k) %>%
         summarise(norm_rmse = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
@@ -22,10 +22,11 @@ ggplot(aes(x=k,y=norm_rmse,color=method)) +
   facet_wrap(~scenario,nrow=1)+
   geom_hline(aes(yintercept=norm_rmse,color=method),
              data= d1 %>% filter(method!="MD-Cat") %>% group_by(method,scenario) %>% summarise(norm_rmse=mean(norm_rmse)))+
-  scale_color_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(1,6,7,5)]) +
+  scale_color_manual(values = RColorBrewer::brewer.pal(7,'Paired')[c(1,3,2,6,7,5)]) +
   scale_y_continuous(name="divergence time RSME (height normalized)") + 
-  theme_classic() + theme(legend.position = c(0.85,0.76))
-ggsave("MDCat_Angiosperm_vary_k.pdf",width = 8.2,height=3.6)
+  theme_classic() + theme(legend.position = c(0.75,0.76)) +
+  guides(color  = guide_legend(nrow = 3))
+ggsave("../sysBio_revision/MDCat_Angiosperm_vary_k.pdf",width = 8.2,height=3.6)
 
 dk %>% group_by(scenario  ,  rep , k) %>%
   summarise(rmsn = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
