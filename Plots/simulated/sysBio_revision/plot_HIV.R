@@ -46,7 +46,7 @@ dl=merge(d[d$k == "selected" & d$nodeName =="I1",c(1,2,3,4,6,7,9,13)],
          d[d$k != "selected" & d$nodeName =="I1",c(1,2,3,4,5,6,7,9,13)],
          by=c("treeModel","clockGroup","rep","clockModel","nodeName","trueAge","estAge","error"))$k
 qplot((sub("k","",dl)))+theme_bw()+xlab("k")+ylab("# replicates")
-ggsave("selectedk_HIV.pdf",width=2.9, height = 4)
+ggsave("selectedk_HIV.pdf",width=3, height = 4)
 
 
 require(reshape2)
