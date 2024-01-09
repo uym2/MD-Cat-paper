@@ -6,15 +6,16 @@ dk = read.table("MDCat_Angiosperm_vary_k_nodeAge.txt",header=T)
 
 dk$error = abs(dk$trueNodeAge-dk$estNodeAge)/140
 dk %>% group_by(scenario  ,  rep , k) %>%
-  summarise(rmsn = sqrt(mean(trueNodeAge-estNodeAge)^2)/140) %>%
-ggplot(aes(x=k,y=rmsn)) +
-  stat_summary() + geom_line(stat="summary",size=1) + 
+  summarise(rmsn = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
+ggplot(aes(x=k,y=rmsn,color=k==50)) +
+  geom_line(stat="summary",size=1,color="black") + 
+  stat_summary() + 
   scale_x_log10(breaks=c(2,5,10,25,50,100)) +  
   xlab("# rate categories") + 
   facet_wrap(~scenario,nrow=1)+
-  scale_color_brewer(palette = "Set2")+
+  scale_color_brewer(palette = "Set2",name="Default:")+
   scale_y_continuous(name="divergence time RSME (height normalized)") + 
-  theme_bw() + theme(legend.title = element_blank(),legend.position = c(0.8,0.8))
+  theme_classic() + theme(legend.position = c(0.9,0.85))
 ggsave("MDCat_Angiosperm_vary_k.pdf",width = 11,height=4)
 
 d1 = read.table("../angiosperm/results_brTime.txt",header=T)
