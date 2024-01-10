@@ -64,12 +64,14 @@ qplot(factor(sub("k","",merge(dkc[dkc$k == "kselected" & dkc$nodeName =="I0",c(1
       by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k),levels=c(2,5,10,25,50)))+theme_bw()+xlab("k")+ylab("# replicates")
 ggsave("selectedk_angio.pdf",width=3.2, height = 4)
 
-d2 = dcast(selected+scenario+rep+k~"error",data=dkc,value.var = "error",fun.aggregate = mean)
+#d2 = dcast(selected+scenario+rep+k~"error",data=dkc,value.var = "error",fun.aggregate = mean)
 
 require(scales)
 
-head(d2)
-ggplot(d2,aes(x=scenario,y=error,fill=selected)) + 
+head(dkc)
+dkc %>% group_by(  scenario ,   rep  , k, selected) %>%
+  summarise(e = sqrt(mean( (trueNodeAge-estNodeAge)^2) ) , height=140) %>%
+ggplot(aes(x=scenario,y=e/height,fill=selected)) + 
   stat_summary(position=position_dodge2(width=0.75),
                fun.data = quantiles_95,geom="boxplot") +
   stat_summary(position=position_dodge2(width = 0.9),size=0.3) + 
@@ -78,13 +80,7 @@ ggplot(d2,aes(x=scenario,y=error,fill=selected)) +
   ylab("divergence time error")+
   scale_fill_brewer(palette = "Set2")+
   scale_y_continuous(labels = percent)
-nrow(d2[d2$selected=="Default (k=50)",])
 ggsave("MDCat_Angiosperm_crossval_k.pdf",width=6, height =4 )
 
 
-head(dkc)
-require(tidyr) 
 
-merge(dkc[dkc$selected=="Cross-validation",],dkc[dkc$k=="k100",],by=c(1,2,4,5)) %>%
-  group_by(scenario  ,  rep ) %>% summarise(mes=mean(error.x),meh=mean(error.y)) %>% 
-  filter(mes==meh)
