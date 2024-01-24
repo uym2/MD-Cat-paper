@@ -136,7 +136,7 @@ ggplot(d1[!d1$method %in% c("BEAST-lognormal") ,],
 ggsave("../HIV/results_mse_all.pdf",width = 8,height = 6.7)
 
 ggplot(d1[!d1$method %in% c("BEAST-lognormal")  ,],
-       aes(y=clockModel,
+       aes(y=reorder(sub(" .*","",clockModel),error),
            x=error,fill=method)) + 
   #geom_boxplot(outlier.alpha = 0.5,outlier.size = 0.1,notch=T) + 
   stat_summary(position=position_dodge(width=0.9),width=.5,
