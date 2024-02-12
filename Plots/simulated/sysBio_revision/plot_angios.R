@@ -2,7 +2,7 @@
 require(ggplot2)
 require(scales)
 require(tidyverse)
-dk = read.table("../sysBio_revision/MDCat_Angiosperm_vary_k_nodeAge.txt",header=T)
+dk = read.table("../sysBio_revision/MDCat_Angiosperm_vary_k_nodeAge_revised.txt",header=T)
 
 d1 = read.table("../angiosperm/all_divergence.txt",header=T)
 
@@ -15,7 +15,7 @@ dk %>% group_by(scenario  ,  rep , k) %>%
 #dk %>% group_by(scenario  ,  rep , k) %>%
 #  summarise(norm_rmse = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
 ggplot(aes(x=k,y=norm_rmse,color=method)) +
-  geom_line(stat="summary",size=1) + 
+  geom_line(stat="summary",linewidth=1) + 
   stat_summary() + 
   scale_x_log10(breaks=c(2,5,10,25,50,100)) +  
   xlab("# rate categories") + 
@@ -26,7 +26,7 @@ ggplot(aes(x=k,y=norm_rmse,color=method)) +
   scale_y_continuous(name="divergence time RSME (height normalized)") + 
   theme_classic() + theme(legend.position = c(0.75,0.76)) +
   guides(color  = guide_legend(nrow = 3))
-ggsave("../sysBio_revision/MDCat_Angiosperm_vary_k.pdf",width = 8.2,height=3.6)
+ggsave("../sysBio_revision/MDCat_Angiosperm_vary_k_revised.pdf",width = 8.2,height=3.6)
 
 dk %>% group_by(scenario  ,  rep , k) %>%
   summarise(rmsn = sqrt(mean( (trueNodeAge-estNodeAge)^2) )/140) %>%
@@ -44,7 +44,7 @@ quantiles_95 <- function(x) {
 }
 
 
-dkc = read.table("MDCat_Angiosperm_vary_k_with_crossval.txt",header=T)
+dkc = read.table("MDCat_Angiosperm_vary_k_with_crossval_revised.txt",header=T)
 dkc$error = abs(dkc$trueNodeAge-dkc$estNodeAge)/140
 dkc$selected = "Others"
 dkc[dkc$k == "kselected",]$selected = "Cross-validation"
@@ -61,8 +61,8 @@ dcast(dkc[,c(1,3,7)],scenario~k,fun.aggregate = mean)
 
 qplot(factor(sub("k","",merge(dkc[dkc$k == "kselected" & dkc$nodeName =="I0",c(1,2,4,5,6,7)],
                         dkc[dkc$k != "kselected"& dkc$nodeName =="I0",c(1,2,3,4,5,6,7)],
-      by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k),levels=c(2,5,10,25,50)))+theme_bw()+xlab("k")+ylab("# replicates")
-ggsave("selectedk_angio.pdf",width=3.2, height = 4)
+      by=c("scenario","rep","nodeName","trueNodeAge","estNodeAge","error"))$k),levels=c(2,5,10,25,50,100)))+theme_bw()+xlab("k")+ylab("# replicates")
+ggsave("selectedk_angio_revised.pdf",width=3.2, height = 4)
 
 #d2 = dcast(selected+scenario+rep+k~"error",data=dkc,value.var = "error",fun.aggregate = mean)
 
@@ -80,7 +80,7 @@ ggplot(aes(x=scenario,y=e/height,fill=selected)) +
   ylab("divergence time error")+
   scale_fill_brewer(palette = "Set2")+
   scale_y_continuous(labels = percent)
-ggsave("MDCat_Angiosperm_crossval_k.pdf",width=6, height =4 )
+ggsave("MDCat_Angiosperm_crossval_k_revised.pdf",width=6, height =4 )
 
 
 
