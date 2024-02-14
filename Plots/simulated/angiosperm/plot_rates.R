@@ -51,6 +51,6 @@ ggplot(dr[!dr$method %in% c("BEAST_strict"),],aes(y=method,x=log10(exp(error)),f
   theme(axis.ticks.y = element_blank(),
         axis.title.y = element_blank(), 
         axis.text.y = element_blank(), 
-        legend.title = element_blank(),legend.position = "bottom") 
+        legend.title = element_blank(),legend.position = "none") 
 ggsave("mutation_rates_flipped.pdf",width=3.4,height=5)
 

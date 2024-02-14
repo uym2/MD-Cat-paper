@@ -130,7 +130,7 @@ ggplot(d1[!d1$method %in% c("BEAST-lognormal") ,],
   scale_x_continuous(label=percent)+
   scale_y_discrete(name="") +
   facet_wrap(nsmpltime~host,scale="free_x") +
-  xlab("tMRCA normalized bias (%)") + ylab("") +
+  xlab("divergence time RSME (height normalized)") + ylab("") +
   theme_bw() + theme(legend.title = element_blank(), legend.position = "none") +
   theme(panel.spacing = unit(0,"pt"))
 ggsave("../HIV/results_mse_all.pdf",width = 8,height = 6.7)
