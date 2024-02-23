@@ -91,7 +91,7 @@ ggplot(aes(x=clockModel,y=e/height,fill=selected)) + #geom_boxplot(outlier.size 
   scale_fill_brewer(name="",palette = "Set2")+
   theme(axis.text.x = element_text(angle = 0),
         legend.title = element_blank()) + 
-  theme(legend.position = "none")
+  theme(legend.position = "bottom")
 ggsave("MDCat_HIVsim_model_selection.pdf",width=8, height=5)
 
 
