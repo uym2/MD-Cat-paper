@@ -3,7 +3,7 @@ require(ggplot2)
 require(scales)
 library(dplyr)
 
-d = read.table("MDCat_HIVsim_CI.txt",header=T)
+d = read.table("MDCat_HIVsim_CI_new4.txt",header=T)
 d$inside = (d$trueTime >= d$p0025 & d$trueTime <= d$p0975)
 h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
                "height"=c(29.3667,66.8334,22.4934,32.4669),
@@ -19,14 +19,16 @@ d1[d1$name %in% c("M2","M4"),]$nsmpltime = "3 sampling times"
 d1$clockModel = factor(d1$clockModel,levels=c("trilnormcave","trilnormvex","trilnorm"),labels=c("Trimodal1","Trimodal2","Trimodal3"))
 
 ggplot(d1) + 
-  geom_segment(aes(x=trueTime/height,y=p0025/height,xend=trueTime/height,yend=p0975/height,color=inside),size=0.2,alpha=0.5) +
+  geom_segment(aes(x=trueTime/height,y=p0025/height,xend=trueTime/height,yend=p0975/height,color=inside),linewidth=0.2,alpha=0.5) +
   geom_abline() + 
   facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
+  #facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
+  #facet_wrap(~host+nsmpltime,scale="free") + 
   theme_classic() + 
   theme(legend.position = "None",panel.border = element_rect(colour = "black", fill=NA)) + 
   xlab("Normalized true branch length (year/height)") + 
   ylab("Normalized estimated branch length (year/height)")
-ggsave("MDCat_HIVsim_CI.pdf",width=7,height=4)
+ggsave("MDCat_HIVsim_CI_new.pdf",width=7,height=4)
 
 head(d1)
 
@@ -36,19 +38,23 @@ d1 %>% group_by(clockModel,host,nsmpltime) %>%
   mutate(blg=cut(trueTime/height, quantile(trueTime/height,(0:10)/10), include.lowest = T,
                       labels = c(1:10)*10)) %>% 
   group_by(clockModel,host,nsmpltime,blg) %>% 
+  #group_by(clockModel,host,blg) %>% 
   mutate(c=n()) %>%
                 group_by(clockModel,host,nsmpltime,blg,inside) %>% 
+                #group_by(clockModel,host,blg,inside) %>% 
   summarise(n=n()/unique(c)[1]) %>% 
 ggplot(aes(x=blg,fill=inside,y=n))+
   geom_bar(aes(),stat="identity")+
   facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
+  #facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
+  #facet_wrap(~host+nsmpltime,scale="free") + 
   geom_hline(yintercept = 0.95,color="red")+
   scale_y_continuous(labels=percent,name="Portion of branches")+
   scale_x_discrete(name="branch length percentile")+
   scale_fill_brewer(palette = 7,direction = -1,name="True length inside 95% CI: ")+
   theme_classic() + theme(legend.position = "bottom",
                           panel.border = element_rect(colour = "black", fill=NA)) 
-ggsave("HIV-support.pdf",width=8.5,height = 4.7)
+ggsave("HIV-support_new.pdf",width=8.5,height = 4.7)
 
 head(d1)
 
@@ -67,16 +73,18 @@ d1 %>%  filter(trueTime<p0025 | trueTime>p0975) %>%
   scale_linetype(name="")+
   scale_fill_brewer(palette = 7,direction = -1,name="Inside 95% CI: ")+
   theme_bw() + theme(legend.position = "right",
-                          panel.border = element_rect(colour = "black", fill=NA)) 
+                          panel.border = element_rect(colour = "black", fill=NA),legend.title = element_blank()) 
 
-ggsave("HIV-support-delta.pdf",width=8,height = 2.5)
+ggsave("HIV-support-delta_new.pdf",width=8,height = 2.5)
 
 
 
-d1 %>% group_by(clockModel,host,nsmpltime) %>% 
+d2 = d1 %>% group_by(clockModel,host,nsmpltime) %>% 
   mutate(blg=cut(trueTime/height, quantile(trueTime/height,(0:10)/10), include.lowest = T,
                  labels = c(1:10)*10)) %>% 
   group_by(clockModel,host,nsmpltime) %>% 
   mutate(c=n()) %>%
   group_by(host,nsmpltime,inside,clockModel) %>% 
   summarise(n=n()/unique(c)[1]) %>% filter(inside == FALSE)
+
+mean(d2$n)
