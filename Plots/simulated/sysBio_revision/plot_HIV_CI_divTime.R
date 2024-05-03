@@ -21,8 +21,8 @@ d1$clockModel = factor(d1$clockModel,levels=c("trilnormcave","trilnormvex","tril
 ggplot(d1) + 
   geom_segment(aes(x=trueAge/height,y=p0025/height,xend=trueAge/height,yend=p0975/height,color=inside),linewidth=0.2,alpha=0.5) +
   geom_abline() + 
-  #facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
-  facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
+  facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
+  #facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
   #facet_wrap(~host+nsmpltime,scale="free") + 
   theme_classic() + 
   theme(legend.position = "None",panel.border = element_rect(colour = "black", fill=NA)) + 
@@ -37,16 +37,16 @@ head(d1)
 d1 %>% group_by(clockModel,host,nsmpltime) %>% 
   mutate(blg=cut(trueAge/height, quantile(trueAge/height,(0:10)/10), include.lowest = T,
                  labels = c(1:10)*10)) %>% 
-  #group_by(clockModel,host,nsmpltime,blg) %>% 
-  group_by(clockModel,host,blg) %>% 
+  group_by(clockModel,host,nsmpltime,blg) %>% 
+  #group_by(clockModel,host,blg) %>% 
   mutate(c=n()) %>%
-  #group_by(clockModel,host,nsmpltime,blg,inside) %>% 
-  group_by(clockModel,host,blg,inside) %>% 
+  group_by(clockModel,host,nsmpltime,blg,inside) %>% 
+  #group_by(clockModel,host,blg,inside) %>% 
   summarise(n=n()/unique(c)[1]) %>% 
   ggplot(aes(x=blg,fill=inside,y=n))+
   geom_bar(aes(),stat="identity")+
-  #facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
-  facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
+  facet_grid(rows=vars(clockModel),cols=vars(host,nsmpltime),scale="free") + 
+  #facet_grid(rows=vars(clockModel),cols=vars(host),scale="free") + 
   #facet_wrap(~host+nsmpltime,scale="free") + 
   geom_hline(yintercept = 0.95,color="red")+
   scale_y_continuous(labels=percent,name="Portion of nodes")+

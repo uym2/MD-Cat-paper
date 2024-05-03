@@ -2,7 +2,7 @@
 require(ggplot2)
 require(scales)
 require(tidyverse)
-dk = read.table("../sysBio_revision/MDCat_Angiosperm_vary_k_nodeAge_revised.txt",header=T)
+dk = read.table("../sysBio_revision/MDCat_Angiosperm_vary_k_nodeAge_revised2.txt",header=T)
 
 d1 = read.table("../angiosperm/all_divergence.txt",header=T)
 
@@ -17,7 +17,7 @@ dk %>% group_by(scenario  ,  rep , k) %>%
 ggplot(aes(x=k,y=norm_rmse,color=method)) +
   geom_line(stat="summary",linewidth=1) + 
   stat_summary() + 
-  scale_x_log10(breaks=c(2,5,10,25,50,100)) +  
+  scale_x_log10(breaks=c(2,5,10,25,50,100,180)) +  
   xlab("# rate categories") + 
   facet_wrap(~scenario,nrow=1)+
   geom_hline(aes(yintercept=norm_rmse,color=method),

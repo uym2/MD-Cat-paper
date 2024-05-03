@@ -3,7 +3,7 @@ require(ggplot2)
 require(reshape2)
 require(tidyverse)
 
-d = read.table("MDCat_HIVsim_vary_k_revised.txt",header=T)
+d = read.table("MDCat_HIVsim_vary_k_revised2.txt",header=T)
 h = data.frame("treeModel"=c("D750_11_10","D750_3_25","D995_11_10","D995_3_25"),
                "height"=c(29.3667,66.8334,22.4934,32.4669),
                "name"=c("M3","M4","M1","M2"))
@@ -14,15 +14,16 @@ d$clockModel = factor(d$clockModel,levels=c("trilnormcave","trilnormvex","trilno
 
 #d2= dcast(k+treeModel+clockModel+rep~"error",data=d,value.var = "error",fun.aggregate = mean)
 
-d2 = d %>% group_by(treeModel    ,    clockGroup ,   rep , clockModel , k) %>%
+d2 = d %>% group_by(treeModel ,   rep , clockModel , k) %>%
   summarise(e = sqrt(mean( (trueAge-estAge)^2) ),height=unique(height)) %>%
   mutate(error = e/height)
 d2
-ggplot(d2[d2$k != 75,],aes(x=k,y=error,color=treeModel)) +
+ggplot(d2[d2$k != 75,],aes(x=k,y=error,color=clockModel)) +
   stat_summary() + geom_line(stat="summary") + 
-  scale_x_log10(breaks=c(2,5,10,25,50)) + xlab("# rate categories (k)") + ylab("divergence time RSME (height normalized)") +
+  scale_x_log10(breaks=c(2,5,10,25,50,100)) + 
+  xlab("# rate categories (k)") + ylab("divergence time RSME (height normalized)") +
   scale_color_brewer(palette = "Set2")+
-  facet_wrap(~clockModel,scale="free") +
+  facet_wrap(~treeModel,scale="free") +
   theme_classic() + theme(legend.title = element_blank(),legend.position = "bottom")
 ggsave("MDCat_HIVsim_vary_k_revised.pdf",width = 7.1,height=4)
 
